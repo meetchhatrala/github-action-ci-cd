@@ -1,11 +1,11 @@
-apiVersion: apps/v1 # Fixed from "version: v1"
+apiVersion: apps/v1  # This was "version: v1" - the cause of your 'split' error
 kind: Deployment
 metadata:
   name: app-deployment
   labels:
     app: my-app
 spec:
-  replicas: 3
+  replicas: 1 # Start with 1 to save resources on Killercoda
   selector:
     matchLabels:
       app: my-app
@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: my-app-container
-        image: meetchhatrala789/nodeapp:v122 # The CI will replace this
+        image: meetchhatrala789/nodeapp:v12 # This will be updated by your CI
         ports:
-        - containerPort: 80 # Note: If using the Nginx Dockerfile from earlier, this should be 80
+        - containerPort: 80 # Match your Dockerfile (likely Nginx port 80)
