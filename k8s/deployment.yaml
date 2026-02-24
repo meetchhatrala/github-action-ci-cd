@@ -1,4 +1,4 @@
-version: v1
+apiVersion: apps/v1 # Fixed from "version: v1"
 kind: Deployment
 metadata:
   name: app-deployment
@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: my-app-container
-        image: meetchhatrala789/nodeapp:v12
+        image: meetchhatrala789/nodeapp:v12 # The CI will replace this
         ports:
-        - containerPort: 3000
+        - containerPort: 80 # Note: If using the Nginx Dockerfile from earlier, this should be 80
