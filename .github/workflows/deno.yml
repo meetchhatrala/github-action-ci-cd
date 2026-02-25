@@ -12,9 +12,9 @@ jobs:
       - name: Code checkout
         uses: actions/checkout@v4
 
-      - name: Set Version Name
-        id: vars
-        run: echo "version_name=$(echo ${{ github.sha }} | cut -c1-4)" >> $GITHUB_OUTPUT
+      # - name: Set Version Name
+      #   id: vars
+      #   run: echo "version_name=$(echo ${{ github.sha }} | cut -c1-4)" >> $GITHUB_OUTPUT
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -24,24 +24,19 @@ jobs:
 
       - name: Docker Build & Push
         run: |
-          TAG=${{ steps.vars.outputs.version_name }}
-          docker build -t meetchhatrala789/nodeapp:$TAG ./my-react-app
-          docker push meetchhatrala789/nodeapp:$TAG
+          docker build -t meetchhatrala789/nodeapp:latest ./my-react-app
+          docker push meetchhatrala789/nodeapp:latest
 
-      - name: Update Deployment YAML
-        run: |
-          TAG=${{ steps.vars.outputs.version_name }}
-          # This line fixes the tag in your file automatically
-          sed -i "s|image: meetchhatrala789/nodeapp:.*|image: meetchhatrala789/nodeapp:$TAG|g" k8s/deployment.yaml
+      # - name: Update Deployment YAML
+      #   run: |
+      #     TAG=${{ steps.vars.outputs.version_name }}
+      #     # This line fixes the tag in your file automatically
+      #     sed -i "s|image: meetchhatrala789/nodeapp:.*|image: meetchhatrala789/nodeapp:$TAG|g" k8s/deployment.yaml
 
       - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add k8s/deployment.yaml
-          if git diff --quiet && git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "deploy: update image to version ${{ steps.vars.outputs.version_name }}"
-            git push origin main
-          fi
+          git commit -m "Update deployment.yaml with new image tag"
+          git push origin main

@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: my-app-container
-        image: meetchhatrala789/nodeapp:v12 # This will be updated by your CI
+        image: meetchhatrala789/nodeapp:latest # This will be updated by your CI
         ports:
         - containerPort: 80 # Match your Dockerfile (likely Nginx port 80)
