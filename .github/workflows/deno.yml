@@ -114,8 +114,7 @@ jobs:
       # Clone Timoni repo
       - name: Clone Timoni Repo
         run: |
-          git clone https://${{ secrets.GH_TOKEN }}@github.com/meetchhatrala/timoni-repo.git
-
+          git clone https://github.com/meetchhatrala/timoni-repo.git
       # Update image tag
       - name: Update image tag in values.cue
         run: |
