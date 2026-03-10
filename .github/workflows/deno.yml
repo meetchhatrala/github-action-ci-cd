@@ -114,7 +114,7 @@ jobs:
       # Clone Timoni repo
       - name: Clone Timoni Repo
         run: |
-          git clone https://github.com/meetchhatrala/timoni-repo.git
+          git clone  git clone https://${{ secrets.GH_TOKEN }}@github.com/meetchhatrala/timoni-repo.git
       # Update image tag
       - name: Update image tag in values.cue
         run: |
@@ -129,4 +129,4 @@ jobs:
           git config --global user.email "actions@github.com"
           git add values.cue
           git commit -m "Update image tag to ${{ github.sha }}"
-          git push
+          git push https://${{ secrets.GH_TOKEN }}@github.com/meetchhatrala/timoni-repo.git HEAD:main
