@@ -1,0 +1,6 @@
+apiVersion: kustokize.config.k8s.io/v1beta1
+kind: Kustokization
+resources:
+- ../base
+- update-pod.yaml
+

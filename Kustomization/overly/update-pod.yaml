@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: test-deployment
+  namespace: default
+  labels:
+    env: node-1
+spec:
+  replicas: 2
