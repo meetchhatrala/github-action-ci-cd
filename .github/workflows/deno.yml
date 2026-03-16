@@ -82,76 +82,6 @@
 
 
 
-# name: Docker CI
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   docker-ci:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout App Repo
-#         uses: actions/checkout@v4
-
-#       - name: Login to Docker Hub
-#         uses: docker/login-action@v3
-#         with:
-#           username: ${{ secrets.USERNAME }}
-#           password: ${{ secrets.TOKEN_DOCKER }}
-
-#       - name: Build Docker Image
-#         run: |
-#           docker build -t meetchhatrala789/nodeapp:${{ github.sha }} ./my-react-app
-
-      
-#       - name: Push Docker Image
-#         run: |
-#           docker push meetchhatrala789/nodeapp:${{ github.sha }}
-
-      
-#       # - name: Clone Timoni Repo
-#       #   run: |
-#       #     git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/meetchhatrala/timoni-repo.git
-
-     
-#       # - name: Show values.cue before update
-#       #   run: |
-#       #     cd timoni-repo
-#       #     echo "Before update:"
-#       #     cat values.cue
-
-      
-#       # - name: Update image tag in values.cue
-#       #   run: |
-#       #     cd timoni-repo
-#       #     IMAGE_TAG=${{ github.sha }}
-
-#       #     sed -i "s/tag:[[:space:]]*\".*\"/tag:        \"$IMAGE_TAG\"/" values.cue
-
-#       #     echo "After update:"
-#       #     cat values.cue
-
-      
-#       - name: Commit and push changes
-#         run: |
-#           cd timoni-repo
-#           git config --global user.name "github-actions"
-#           git config --global user.email "actions@github.com"
-
-#           git add values.cue
-
-#           if git diff --cached --quiet; then
-#             echo "No changes detected"
-#           else
-#             git commit -m "Update image tag to ${{ github.sha }}"
-#             git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/meetchhatrala/timoni-repo.git HEAD:main
-#           fi
-
-
 name: Docker CI
 
 on:
@@ -177,38 +107,108 @@ jobs:
         run: |
           docker build -t meetchhatrala789/nodeapp:${{ github.sha }} ./my-react-app
 
+      
       - name: Push Docker Image
         run: |
           docker push meetchhatrala789/nodeapp:${{ github.sha }}
 
+      
+      - name: Clone Timoni Repo
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/meetchhatrala/timoni-repo.git
+
+     
+      - name: Show values.cue before update
+        run: |
+          cd timoni-repo
+          echo "Before update:"
+          cat values.cue
+
+      
       - name: Update image tag in values.cue
         run: |
+          cd timoni-repo
           IMAGE_TAG=${{ github.sha }}
-          REPO="meetchhatrala/timoni-repo"
-          FILE_PATH="values.cue"
 
-          # Get current file content + SHA (needed for update)
-          RESPONSE=$(curl -s \
-            -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/$REPO/contents/$FILE_PATH")
+          sed -i "s/tag:[[:space:]]*\".*\"/tag:        \"$IMAGE_TAG\"/" values.cue
 
-          FILE_SHA=$(echo $RESPONSE | jq -r '.sha')
-          CONTENT=$(echo $RESPONSE | jq -r '.content' | base64 -d)
+          echo "After update:"
+          cat values.cue
 
-          # Update the tag value
-          UPDATED_CONTENT=$(echo "$CONTENT" | sed "s/tag:[[:space:]]*\".*\"/tag:        \"$IMAGE_TAG\"/")
+      
+      - name: Commit and push changes
+        run: |
+          cd timoni-repo
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
 
-          # Encode back to base64
-          ENCODED=$(echo "$UPDATED_CONTENT" | base64 -w 0)
+          git add values.cue
 
-          # Push update via API
-          curl -s -X PUT \
-            -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/$REPO/contents/$FILE_PATH" \
-            -d "{
-              \"message\": \"Update image tag to $IMAGE_TAG\",
-              \"content\": \"$ENCODED\",
-              \"sha\": \"$FILE_SHA\"
-            }"
+          if git diff --cached --quiet; then
+            echo "No changes detected"
+          else
+            git commit -m "Update image tag to ${{ github.sha }}"
+            git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/meetchhatrala/timoni-repo.git HEAD:main
+          fi
+
+
+# name: Docker CI
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   docker-ci:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout App Repo
+#         uses: actions/checkout@v4
+
+#       - name: Login to Docker Hub
+#         uses: docker/login-action@v3
+#         with:
+#           username: ${{ secrets.USERNAME }}
+#           password: ${{ secrets.TOKEN_DOCKER }}
+
+#       - name: Build Docker Image
+#         run: |
+#           docker build -t meetchhatrala789/nodeapp:${{ github.sha }} ./my-react-app
+
+#       - name: Push Docker Image
+#         run: |
+#           docker push meetchhatrala789/nodeapp:${{ github.sha }}
+
+#       - name: Update image tag in values.cue
+#         run: |
+#           IMAGE_TAG=${{ github.sha }}
+#           REPO="meetchhatrala/timoni-repo"
+#           FILE_PATH="values.cue"
+
+#           # Get current file content + SHA (needed for update)
+#           RESPONSE=$(curl -s \
+#             -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+#             -H "Accept: application/vnd.github.v3+json" \
+#             "https://api.github.com/repos/$REPO/contents/$FILE_PATH")
+
+#           FILE_SHA=$(echo $RESPONSE | jq -r '.sha')
+#           CONTENT=$(echo $RESPONSE | jq -r '.content' | base64 -d)
+
+#           # Update the tag value
+#           UPDATED_CONTENT=$(echo "$CONTENT" | sed "s/tag:[[:space:]]*\".*\"/tag:        \"$IMAGE_TAG\"/")
+
+#           # Encode back to base64
+#           ENCODED=$(echo "$UPDATED_CONTENT" | base64 -w 0)
+
+#           # Push update via API
+#           curl -s -X PUT \
+#             -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+#             -H "Accept: application/vnd.github.v3+json" \
+#             "https://api.github.com/repos/$REPO/contents/$FILE_PATH" \
+#             -d "{
+#               \"message\": \"Update image tag to $IMAGE_TAG\",
+#               \"content\": \"$ENCODED\",
+#               \"sha\": \"$FILE_SHA\"
+#             }"
